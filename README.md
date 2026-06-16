@@ -1,4 +1,6 @@
-# Digital Twin · Avatar 3D ao Vivo
+# HOLOS · Gêmeo Digital ao Vivo
+
+![Splash screen do HOLOS](prints/splash-screen.png)
 
 Demo de **gêmeo digital** em tempo real: a câmera do notebook é o **sensor**, a visão
 computacional (MediaPipe Pose) extrai 33 articulações do corpo em 3D, e um **avatar
