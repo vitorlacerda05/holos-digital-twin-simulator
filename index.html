@@ -73,12 +73,18 @@
   <footer id="controls">
     <span class="hint" id="hintCam">Câmera ativa. Clique em <b>Sincronizar</b> para abrir o gêmeo digital.</span>
     <div id="liveControls" class="hidden">
-      <label><input type="checkbox" id="optGhost" /> Fantasma preditivo</label>
-      <label><input type="checkbox" id="optLabels" checked /> Anotações 3D</label>
-      <label><input type="checkbox" id="optRotate" /> Auto-orbitar</label>
-      <label><input type="checkbox" id="optTrail" /> Rastro</label>
-      <label><input type="checkbox" id="optMirror" checked /> Espelhar</label>
-      <label>Suavização <input type="range" id="optSmooth" min="0" max="90" value="55" /></label>
+      <span class="ctl-title">Gêmeo</span>
+      <label class="sw"><input type="checkbox" id="optGhost" /><span class="track"></span>Fantasma preditivo</label>
+      <label class="sw"><input type="checkbox" id="optLabels" checked /><span class="track"></span>Anotações 3D</label>
+      <label class="sw"><input type="checkbox" id="optTrail" /><span class="track"></span>Rastro</label>
+      <label class="sw"><input type="checkbox" id="optRotate" /><span class="track"></span>Auto-orbitar</label>
+      <span class="ctl-sep"></span>
+      <span class="ctl-title">Câmera</span>
+      <label class="sw"><input type="checkbox" id="optMirror" checked /><span class="track"></span>Espelhar</label>
+      <label class="slider-ctl">Suavização
+        <input type="range" id="optSmooth" min="0" max="90" value="55" aria-label="Suavização do movimento" />
+        <b id="smoothVal">55%</b>
+      </label>
       <span class="ctl-sep"></span>
       <button id="btnRec">● Gravar 10s</button>
     </div>
@@ -98,11 +104,11 @@
   <!-- MODAL DE REPLAY (abre ao terminar a gravação) -->
   <div id="replayModal" class="hidden">
     <div class="modal-card">
-      <button class="modal-x" id="rmClose" title="Descartar">✕</button>
+      <button class="modal-x" id="rmClose" title="Descartar" aria-label="Descartar gravação">✕</button>
       <div class="rm-icon">⏯</div>
       <h3>Gravação concluída</h3>
       <p>10&nbsp;segundos capturados. Reproduza o gêmeo digital a partir do <b>estado gravado</b>.</p>
-      <div class="rm-bar"><i id="rmFill"></i></div>
+      <div class="rm-scrub" id="rmScrub" role="slider" aria-label="Linha do tempo da gravação" tabindex="0"><div class="rm-bar"><i id="rmFill"></i></div></div>
       <div class="rm-time" id="rmTime">0.0s</div>
       <div class="rm-actions">
         <button id="rmPlay" class="primary">▶ Reproduzir</button>

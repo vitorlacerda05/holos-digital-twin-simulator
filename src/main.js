@@ -1,3 +1,11 @@
+import '@fontsource/orbitron/500.css';
+import '@fontsource/orbitron/700.css';
+import '@fontsource/orbitron/900.css';
+import '@fontsource/exo-2/300.css';
+import '@fontsource/exo-2/400.css';
+import '@fontsource/exo-2/500.css';
+import '@fontsource/exo-2/600.css';
+import '@fontsource/exo-2/700.css';
 import { createPose } from './pose.js';
 import { Twin3D } from './twin3d.js';
 import { drawSkeleton } from './realview.js';
@@ -6,6 +14,10 @@ const $ = (id) => document.getElementById(id);
 const video = $('cam');
 const overlay = $('overlay');
 const twin = new Twin3D($('scene'));
+
+// destaca as etapas do fluxo no topo conforme o progresso (explicabilidade)
+const flowSteps = [...document.querySelectorAll('.flow .step')];
+function setActiveSteps(n) { flowSteps.forEach((s, i) => s.classList.toggle('active', i < n)); }
 
 let landmarker = null;
 let running = false;     // loop ativo (câmera ligada)
@@ -47,6 +59,7 @@ async function startCamera() {
   }
   $('gate').classList.add('hidden');
   applyMirror();
+  setActiveSteps(2); // 1. corpo real + 2. visão computacional ativos
   running = true;
   requestAnimationFrame(loop);
 }
@@ -70,6 +83,7 @@ function sync() {
       $('grid').classList.remove('camera-only');  // gêmeo "abre ao lado"
       $('hintCam').classList.add('hidden');
       $('liveControls').classList.remove('hidden');
+      setActiveSteps(4); // 3. gêmeo 3D + 4. telemetria ativos
       setTimeout(() => { twin.resize(); synced = true; }, 820); // após a transição de abertura
     }
   }, 60);
@@ -264,14 +278,36 @@ $('optLabels').onchange = (e) => twin.setAnnotationsVisible(e.target.checked);
 $('optRotate').onchange = (e) => twin.setAutoRotate(e.target.checked);
 $('optTrail').onchange = (e) => twin.setTrail(e.target.checked);
 $('optMirror').onchange = (e) => { mirror = e.target.checked; applyMirror(); };
-$('optSmooth').oninput = (e) => twin.setSmoothing(+e.target.value / 100);
+$('optSmooth').oninput = (e) => { const v = +e.target.value; twin.setSmoothing(v / 100); $('smoothVal').textContent = v + '%'; };
 $('btnRec').onclick = startRecording;
 $('rmPlay').onclick = togglePlay;
 $('rmRestart').onclick = restartReplay;
 $('rmDiscard').onclick = discardReplay;
 $('rmClose').onclick = discardReplay;
-$('replayModal').onclick = (e) => { if (e.target.id === 'replayModal') discardReplay(); }; // clique no fundo descarta
 twin.setSmoothing(0.55);
+
+// scrubber do replay (clicar/arrastar/teclado para navegar na gravação)
+function seekTo(clientX) {
+  if (!replayOpen) return;
+  const r = $('rmScrub').getBoundingClientRect();
+  const frac = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+  pauseTime = frac * repDur;
+  if (playing) repStart = performance.now() - pauseTime;
+}
+let scrubbing = false;
+const scrub = $('rmScrub');
+scrub.addEventListener('pointerdown', (e) => { scrubbing = true; scrub.setPointerCapture(e.pointerId); seekTo(e.clientX); });
+scrub.addEventListener('pointermove', (e) => { if (scrubbing) seekTo(e.clientX); });
+scrub.addEventListener('pointerup', () => { scrubbing = false; });
+scrub.addEventListener('pointercancel', () => { scrubbing = false; });
+scrub.addEventListener('keydown', (e) => {
+  if (!replayOpen) return;
+  if (e.key === 'ArrowLeft') pauseTime = Math.max(0, pauseTime - 500);
+  else if (e.key === 'ArrowRight') pauseTime = Math.min(repDur, pauseTime + 500);
+  else return;
+  if (playing) repStart = performance.now() - pauseTime;
+  e.preventDefault();
+});
 
 window.addEventListener('resize', () => twin.resize());
 

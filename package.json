@@ -11,6 +11,8 @@
     "fetch-model": "node scripts/fetch-model.mjs"
   },
   "dependencies": {
+    "@fontsource/exo-2": "^5.2.8",
+    "@fontsource/orbitron": "^5.2.8",
     "@mediapipe/tasks-vision": "^0.10.18",
     "three": "^0.169.0"
   },
