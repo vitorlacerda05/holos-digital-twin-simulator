@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HOLOS · Gêmeo Digital ao Vivo</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <header id="topbar">
+    <div class="logo"><span class="mark">◉</span> HOLOS <span class="sub">· Gêmeo Digital ao Vivo</span></div>
+    <div class="flow">
+      <span class="step"><b>1</b> Corpo real</span><span class="arr">→</span>
+      <span class="step"><b>2</b> Visão computacional (pose)</span><span class="arr">→</span>
+      <span class="step"><b>3</b> Gêmeo 3D</span><span class="arr">→</span>
+      <span class="step"><b>4</b> Estado &amp; telemetria</span>
+    </div>
+    <div class="spacer"></div>
+    <span class="pill" id="fps">— FPS</span>
+  </header>
+
+  <main id="grid" class="camera-only">
+    <!-- MUNDO REAL -->
+    <section class="panel real">
+      <div class="phead"><span class="dot green"></span><h2>Mundo Real</h2><span class="tag">câmera + detecção de pose</span></div>
+      <div class="stage">
+        <video id="cam" playsinline muted></video>
+        <canvas id="overlay"></canvas>
+        <span class="olabel">feed ao vivo · 33 pontos rastreados</span>
+      </div>
+    </section>
+
+    <!-- GÊMEO DIGITAL 3D (abre ao sincronizar) -->
+    <section class="panel twin">
+      <div class="phead"><span class="dot cyan"></span><h2>Gêmeo Digital 3D</h2><span class="tag" id="twinTag">réplica holográfica · arraste p/ orbitar</span></div>
+      <div class="stage">
+        <canvas id="scene"></canvas>
+        <div class="hud">
+          <div class="hud-row"><span>STATUS</span><b id="status" class="warn">CALIBRANDO…</b></div>
+          <div class="hud-row"><span>CONFIANÇA</span><b id="conf">—</b></div>
+          <div class="hud-row"><span>LATÊNCIA</span><b id="lat">— ms</b></div>
+          <div class="hud-sep"></div>
+          <div class="hud-row"><span>SINCRONIA</span><b id="syncv">—</b></div>
+          <div class="syncbar"><i id="syncfill"></i></div>
+          <div class="hud-sep"></div>
+          <div class="hud-row"><span>COTOVELO E/D</span><b id="elbow">— / —</b></div>
+          <div class="hud-row"><span>JOELHO E/D</span><b id="knee">— / —</b></div>
+          <div class="hud-row"><span>INCLINAÇÃO TRONCO</span><b id="torso">—</b></div>
+        </div>
+        <div class="ergo ok" id="ergo"><span>●</span><span id="ergoTxt">Ergonomia: aguardando dados…</span></div>
+        <div class="recbadge hidden" id="recbadge"><span class="rdot"></span><span id="recTxt">REC</span></div>
+      </div>
+    </section>
+
+    <!-- feixe de dados câmera -> gêmeo (anima no momento da sincronia) -->
+    <div id="linkbeam"></div>
+
+    <!-- CTA flutuante de sincronização (visível só na etapa "só câmera") -->
+    <div id="syncCta">
+      <div class="cta-card">
+        <div class="cta-icon">⬡</div>
+        <h3>Gêmeo digital pronto</h3>
+        <p>Câmera ativa e capturando sua pose.<br />Sincronize para construir o gêmeo 3D ao vivo.</p>
+        <button id="btnSync" class="primary big">⟳ Sincronizar</button>
+        <div class="link-progress" id="linkProgress">
+          <span id="linkMsg">Estabelecendo enlace…</span>
+          <div class="lp-bar"><i id="lpFill"></i></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="controls">
+    <span class="hint" id="hintCam">Câmera ativa. Clique em <b>Sincronizar</b> para abrir o gêmeo digital.</span>
+    <div id="liveControls" class="hidden">
+      <label><input type="checkbox" id="optGhost" /> Fantasma preditivo</label>
+      <label><input type="checkbox" id="optLabels" checked /> Anotações 3D</label>
+      <label><input type="checkbox" id="optRotate" /> Auto-orbitar</label>
+      <label><input type="checkbox" id="optTrail" /> Rastro</label>
+      <label><input type="checkbox" id="optMirror" checked /> Espelhar</label>
+      <label>Suavização <input type="range" id="optSmooth" min="0" max="90" value="55" /></label>
+      <span class="ctl-sep"></span>
+      <button id="btnRec">● Gravar 10s</button>
+    </div>
+  </footer>
+
+  <!-- SPLASH -->
+  <div id="gate">
+    <div class="splash-bg"></div>
+    <div class="card">
+      <div class="brand"><span class="mark">◉</span> HOLOS</div>
+      <div class="tagline">Clique e sincronize seu gêmeo</div>
+      <button id="btnCamera" class="primary big">▶ Iniciar câmera</button>
+      <p class="loadnote" id="loadnote"></p>
+    </div>
+  </div>
+
+  <!-- MODAL DE REPLAY (abre ao terminar a gravação) -->
+  <div id="replayModal" class="hidden">
+    <div class="modal-card">
+      <button class="modal-x" id="rmClose" title="Descartar">✕</button>
+      <div class="rm-icon">⏯</div>
+      <h3>Gravação concluída</h3>
+      <p>10&nbsp;segundos capturados. Reproduza o gêmeo digital a partir do <b>estado gravado</b>.</p>
+      <div class="rm-bar"><i id="rmFill"></i></div>
+      <div class="rm-time" id="rmTime">0.0s</div>
+      <div class="rm-actions">
+        <button id="rmPlay" class="primary">▶ Reproduzir</button>
+        <button id="rmRestart">↻ Reiniciar</button>
+        <button id="rmDiscard">Descartar</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
