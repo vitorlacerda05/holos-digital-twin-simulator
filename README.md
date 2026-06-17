@@ -7,6 +7,8 @@ computacional (MediaPipe Pose) extrai 33 articulações do corpo em 3D, e um **a
 holográfico** (Three.js + bloom) reconstrói você em tempo real — orbitável com o mouse.
 Tudo roda **localmente no navegador**, nada é enviado para a internet.
 
+![Gêmeo digital ao vivo](prints/gemeo-digital.png)
+
 ## Por que isso "é" um gêmeo digital (e não só um espelho)
 
 | Pilar | Como aparece na demo |
