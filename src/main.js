@@ -21,7 +21,7 @@ function setActiveSteps(n) { flowSteps.forEach((s, i) => s.classList.toggle('act
 
 let landmarker = null;
 let running = false;     // loop ativo (câmera ligada)
-let synced = false;      // gêmeo digital sincronizado
+let synced = false;      // sombra digital sincronizada
 let mirror = true;
 let lastVideoTime = -1;
 let fps = 0, lastT = performance.now(), frame = 0;
@@ -39,7 +39,7 @@ async function boot() {
   return true;
 }
 
-// PASSO 1 -> 2: liga só a câmera (com detecção de pose, mas sem o gêmeo)
+// PASSO 1 -> 2: liga só a câmera (com detecção de pose, mas sem a sombra)
 async function startCamera() {
   $('btnCamera').disabled = true;
   if (!landmarker) {
@@ -64,11 +64,11 @@ async function startCamera() {
   requestAnimationFrame(loop);
 }
 
-// PASSO 2 -> 3: sincroniza e abre o gêmeo digital ao lado
+// PASSO 2 -> 3: sincroniza e abre a sombra digital ao lado
 function sync() {
   if (synced) return;
   $('btnSync').disabled = true;
-  $('linkbeam').classList.add('fire');            // feixe de dados câmera -> gêmeo
+  $('linkbeam').classList.add('fire');            // feixe de dados câmera -> sombra
   const prog = $('linkProgress'), fill = $('lpFill'), msg = $('linkMsg');
   prog.classList.add('show');
   const steps = ['Estabelecendo enlace…', 'Calibrando sensores…', 'Construindo malha 3D…'];
@@ -80,10 +80,10 @@ function sync() {
     if (p >= 100) {
       clearInterval(iv);
       $('syncCta').classList.add('hidden');
-      $('grid').classList.remove('camera-only');  // gêmeo "abre ao lado"
+      $('grid').classList.remove('camera-only');  // sombra "abre ao lado"
       $('hintCam').classList.add('hidden');
       $('liveControls').classList.remove('hidden');
-      setActiveSteps(4); // 3. gêmeo 3D + 4. telemetria ativos
+      setActiveSteps(4); // 3. sombra 3D + 4. telemetria ativos
       setTimeout(() => { twin.resize(); synced = true; }, 820); // após a transição de abertura
     }
   }, 60);
@@ -110,7 +110,7 @@ function loop(now) {
 
     if (recording && worldList.length) recordFrame(worldList);
 
-    // alimenta o gêmeo ao vivo (exceto quando o modal de replay está aberto)
+    // alimenta a sombra ao vivo (exceto quando o modal de replay está aberto)
     if (synced && !replayOpen) {
       if (worldList.length) {
         lostFrames = 0;
@@ -129,7 +129,7 @@ function loop(now) {
     if (now - recStart >= REC_MS) stopRecording();
   }
 
-  // replay: o gêmeo roda a partir do estado gravado (digital thread)
+  // replay: a sombra roda a partir do estado gravado (digital thread)
   if (synced && replayOpen) {
     let elapsed = pauseTime;
     if (playing) { elapsed = (now - repStart) % repDur; pauseTime = elapsed; }
@@ -285,6 +285,15 @@ $('rmRestart').onclick = restartReplay;
 $('rmDiscard').onclick = discardReplay;
 $('rmClose').onclick = discardReplay;
 twin.setSmoothing(0.55);
+
+// diálogo "Por que isto é uma Sombra Digital?" (<dialog> nativo: Esc fecha sozinho)
+const whyDialog = $('whyDialog');
+const openWhy = () => { if (typeof whyDialog.showModal === 'function') whyDialog.showModal(); else whyDialog.setAttribute('open', ''); };
+const closeWhy = () => whyDialog.close();
+$('btnWhy').onclick = openWhy;
+$('wdClose').onclick = closeWhy;
+$('wdCloseBottom').onclick = closeWhy;
+whyDialog.addEventListener('click', (e) => { if (e.target === whyDialog) closeWhy(); }); // clique no fundo fecha
 
 // scrubber do replay (clicar/arrastar/teclado para navegar na gravação)
 function seekTo(clientX) {

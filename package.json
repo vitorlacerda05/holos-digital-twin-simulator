@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Gêmeo digital 3D em tempo real a partir da câmera (pose tracking + Three.js)",
+  "description": "Sombra digital 3D em tempo real a partir da câmera (pose tracking + Three.js)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

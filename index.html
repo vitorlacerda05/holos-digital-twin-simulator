@@ -3,36 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HOLOS · Gêmeo Digital ao Vivo</title>
+  <title>HOLOS · Sombra Digital ao Vivo</title>
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
   <header id="topbar">
-    <div class="logo"><span class="mark">◉</span> HOLOS <span class="sub">· Gêmeo Digital ao Vivo</span></div>
+    <div class="logo"><span class="mark">◉</span> HOLOS <span class="sub">· Sombra Digital ao Vivo</span></div>
     <div class="flow">
       <span class="step"><b>1</b> Corpo real</span><span class="arr">→</span>
       <span class="step"><b>2</b> Visão computacional (pose)</span><span class="arr">→</span>
-      <span class="step"><b>3</b> Gêmeo 3D</span><span class="arr">→</span>
+      <span class="step"><b>3</b> Sombra 3D</span><span class="arr">→</span>
       <span class="step"><b>4</b> Estado &amp; telemetria</span>
     </div>
     <div class="spacer"></div>
-    <span class="pill" id="fps">— FPS</span>
+    <button type="button" class="why-btn" id="btnWhy" aria-haspopup="dialog">Por que isto é uma Sombra Digital? <span class="wb-arr">→</span></button>
   </header>
 
   <main id="grid" class="camera-only">
     <!-- MUNDO REAL -->
     <section class="panel real">
-      <div class="phead"><span class="dot green"></span><h2>Mundo Real</h2><span class="tag">câmera + detecção de pose</span></div>
+      <div class="phead"><span class="dot green"></span><h2>Mundo Real</h2></div>
       <div class="stage">
         <video id="cam" playsinline muted></video>
         <canvas id="overlay"></canvas>
         <span class="olabel">feed ao vivo · 33 pontos rastreados</span>
+        <span class="pill fps-cam" id="fps" title="Quadros por segundo da câmera">— FPS</span>
       </div>
     </section>
 
     <!-- GÊMEO DIGITAL 3D (abre ao sincronizar) -->
     <section class="panel twin">
-      <div class="phead"><span class="dot cyan"></span><h2>Gêmeo Digital 3D</h2><span class="tag" id="twinTag">réplica holográfica · arraste p/ orbitar</span></div>
+      <div class="phead"><span class="dot cyan"></span><h2>Sombra Digital 3D</h2></div>
       <div class="stage">
         <canvas id="scene"></canvas>
         <div class="hud">
@@ -52,15 +53,15 @@
       </div>
     </section>
 
-    <!-- feixe de dados câmera -> gêmeo (anima no momento da sincronia) -->
+    <!-- feixe de dados câmera -> sombra (anima no momento da sincronia) -->
     <div id="linkbeam"></div>
 
     <!-- CTA flutuante de sincronização (visível só na etapa "só câmera") -->
     <div id="syncCta">
       <div class="cta-card">
         <div class="cta-icon">⬡</div>
-        <h3>Gêmeo digital pronto</h3>
-        <p>Câmera ativa e capturando sua pose.<br />Sincronize para construir o gêmeo 3D ao vivo.</p>
+        <h3>Sombra digital pronta</h3>
+        <p>Câmera ativa e capturando sua pose.<br />Sincronize para construir a sombra 3D ao vivo.</p>
         <button id="btnSync" class="primary big">⟳ Sincronizar</button>
         <div class="link-progress" id="linkProgress">
           <span id="linkMsg">Estabelecendo enlace…</span>
@@ -71,9 +72,9 @@
   </main>
 
   <footer id="controls">
-    <span class="hint" id="hintCam">Câmera ativa. Clique em <b>Sincronizar</b> para abrir o gêmeo digital.</span>
+    <span class="hint" id="hintCam">Câmera ativa. Clique em <b>Sincronizar</b> para abrir a sombra digital.</span>
     <div id="liveControls" class="hidden">
-      <span class="ctl-title">Gêmeo</span>
+      <span class="ctl-title">Sombra</span>
       <label class="sw"><input type="checkbox" id="optGhost" /><span class="track"></span>Fantasma preditivo</label>
       <label class="sw"><input type="checkbox" id="optLabels" checked /><span class="track"></span>Anotações 3D</label>
       <label class="sw"><input type="checkbox" id="optTrail" /><span class="track"></span>Rastro</label>
@@ -95,7 +96,7 @@
     <div class="splash-bg"></div>
     <div class="card">
       <div class="brand"><span class="mark">◉</span> HOLOS</div>
-      <div class="tagline">Clique e sincronize seu gêmeo</div>
+      <div class="tagline">Clique e sincronize sua sombra</div>
       <button id="btnCamera" class="primary big">▶ Iniciar câmera</button>
       <p class="loadnote" id="loadnote"></p>
     </div>
@@ -107,7 +108,7 @@
       <button class="modal-x" id="rmClose" title="Descartar" aria-label="Descartar gravação">✕</button>
       <div class="rm-icon">⏯</div>
       <h3>Gravação concluída</h3>
-      <p>10&nbsp;segundos capturados. Reproduza o gêmeo digital a partir do <b>estado gravado</b>.</p>
+      <p>10&nbsp;segundos capturados. Reproduza a sombra digital a partir do <b>estado gravado</b>.</p>
       <div class="rm-scrub" id="rmScrub" role="slider" aria-label="Linha do tempo da gravação" tabindex="0"><div class="rm-bar"><i id="rmFill"></i></div></div>
       <div class="rm-time" id="rmTime">0.0s</div>
       <div class="rm-actions">
@@ -117,6 +118,88 @@
       </div>
     </div>
   </div>
+
+  <!-- DIÁLOGO: "Por que isto é uma Sombra Digital?" -->
+  <dialog id="whyDialog" class="why-dialog" aria-labelledby="whyTitle">
+    <header class="wd-head">
+      <span class="wd-eyebrow">Entenda a classificação</span>
+      <button type="button" class="wd-close" id="wdClose" aria-label="Fechar explicação">✕</button>
+    </header>
+
+    <article class="wd-body doc">
+      <p class="doc-tag">Sombra Digital · Digital Shadow</p>
+      <h1 id="whyTitle">Por que o HOLOS é uma Sombra Digital, e não um Gêmeo Digital</h1>
+      <p class="doc-intro">
+        O HOLOS captura você em tempo real e reconstrói um avatar 3D que te espelha. Mas o dado
+        só viaja em um sentido — do físico para o virtual. Falta o caminho de volta. Por isso,
+        pelo critério acadêmico, ele fica no degrau do meio. Veja por quê.
+      </p>
+
+      <h2><span class="doc-n">1.</span> Os três níveis <span class="doc-cite">(Kritzinger et al., 2018)</span></h2>
+      <p>
+        A diferença entre os três níveis não está na qualidade do modelo 3D, e sim em
+        <b>como os dados fluem</b> entre o objeto físico e a sua cópia virtual:
+      </p>
+      <ul class="doc-list">
+        <li><b>Modelo Digital.</b> Sem troca automática de dados — toda atualização é feita manualmente por uma pessoa.</li>
+        <li class="here"><b>Sombra Digital.</b> Fluxo automático, mas de uma via só: físico → virtual. O virtual não comanda nada. <span class="doc-mark">← é aqui que o HOLOS está</span></li>
+        <li><b>Gêmeo Digital.</b> Fluxo automático e bidirecional: físico ⇄ virtual — o virtual também comanda o físico de volta, sozinho.</li>
+      </ul>
+
+      <h2><span class="doc-n">2.</span> O que o HOLOS tem <span class="doc-cite">(5 dimensões · Tao et al., 2019)</span></h2>
+      <p>
+        Um gêmeo digital pode ser descrito por cinco partes. O HOLOS tem todas elas — o detalhe
+        decisivo está na entidade virtual (VE) e nas conexões (CN):
+      </p>
+      <ul class="doc-list">
+        <li><b>Entidade física (PE).</b> O corpo da pessoa diante da câmera; a webcam é o sensor que observa o mundo real.</li>
+        <li><b>Entidade virtual (VE).</b> O esqueleto/avatar 3D reconstruído. É um modelo <b>apenas geométrico/cinemático</b>: não tem física própria nem modelo de comportamento. Ele só espelha o físico — não há simulação independente rodando no virtual.</li>
+        <li><b>Serviços (Ss).</b> A telemetria (ângulos de cotovelo/joelho, inclinação de tronco) e o alarme ergonômico.</li>
+        <li><b>Dados (DD).</b> Os 33 landmarks 3D capturados a cada frame e o buffer de gravação/replay de 10&nbsp;s.</li>
+        <li class="here"><b>Conexões (CN).</b> Aqui está o ponto: a conexão é só físico → virtual. Os dados sobem do corpo para o avatar automaticamente, mas <b>nada desce de volta</b>.</li>
+      </ul>
+
+      <h2><span class="doc-n">3.</span> Por que isso o torna sombra, e não gêmeo</h2>
+      <p>
+        O HOLOS faz coisas sofisticadas: <b>prevê movimento</b> (o "fantasma" extrapola para onde
+        você vai) e <b>analisa dados derivados</b> do modelo (ângulos, anomalias de postura). Mesmo
+        assim, falta o ingrediente que define um gêmeo:
+      </p>
+      <ul class="doc-list">
+        <li><b>Não existe caminho de volta.</b> Nada do que o virtual conclui atua automaticamente sobre o físico — a recomendação ("corrija a postura") só aparece na tela. É apoio à decisão, com um humano no meio.</li>
+        <li><b>A entidade virtual não tem simulação própria.</b> Ela apenas reflete o físico em tempo real; não consegue rodar cenários "e se" nem prescrever/comandar.</li>
+      </ul>
+      <p class="doc-note">
+        Em uma frase: <b>fluxo automático de uma via só + virtual sem simulação própria + sem laço de retorno = Sombra Digital.</b>
+      </p>
+      <div class="doc-flow">
+        <span>Sombra Digital (HOLOS): &nbsp;físico <b>→</b> virtual <em>uma via</em></span>
+        <span>Gêmeo Digital: &nbsp;físico <b>⇄</b> virtual <em>duas vias</em></span>
+      </div>
+
+      <h2><span class="doc-n">4.</span> O que faltaria para virar um Gêmeo Digital</h2>
+      <p>Dois passos transformariam esta sombra em um gêmeo pleno:</p>
+      <ul class="doc-list">
+        <li><b>Fechar o laço bidirecional.</b> O lado virtual precisaria comandar um atuador no físico a partir da análise — ajustar sozinho a altura de uma cadeira/bancada, acionar um robô, enviar um comando de correção — de forma automática, sem depender de alguém lendo a tela.</li>
+        <li><b>Dar uma simulação própria à entidade virtual.</b> Um modelo físico/comportamental capaz de prever e prescrever, e não apenas espelhar o que já aconteceu.</li>
+      </ul>
+
+      <h2><span class="doc-n">5.</span> Nota de mercado</h2>
+      <p>
+        Isto não é um defeito do projeto. A <b>maioria dos produtos vendidos hoje como "digital twin"</b>
+        são, na verdade, sombras digitais: capturam e visualizam o físico em tempo real, mas não fecham
+        o laço de controle de volta.
+      </p>
+      <p>
+        O gêmeo digital pleno — bidirecional, com controle automático de volta ao físico — ainda é raro.
+        Reconhecer com precisão onde um sistema está nessa escala é <b>sinal de rigor, não de limitação.</b>
+      </p>
+
+      <div class="doc-foot">
+        <button type="button" class="doc-back" id="wdCloseBottom">← Voltar à demo</button>
+      </div>
+    </article>
+  </dialog>
 
   <script type="module" src="/src/main.js"></script>
 </body>

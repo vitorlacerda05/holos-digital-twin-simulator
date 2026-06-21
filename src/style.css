@@ -45,6 +45,14 @@ body{
 .pill{font-family:var(--font-display);font-size:11px;font-weight:500;color:var(--mut);border:1px solid var(--line);
   border-radius:999px;padding:5px 12px;white-space:nowrap;font-variant-numeric:tabular-nums}
 
+/* botão "Por que isto é uma Sombra Digital?" */
+.why-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-ui);font-weight:600;font-size:12px;
+  text-decoration:none;color:var(--cyan-hot);border:1px solid rgba(34,211,238,.45);border-radius:10px;
+  padding:8px 14px;background:rgba(34,211,238,.06);white-space:nowrap;transition:background .18s,border-color .18s,box-shadow .18s}
+.why-btn:hover{background:rgba(34,211,238,.14);border-color:var(--cyan);box-shadow:0 0 18px rgba(34,211,238,.25)}
+.why-btn .wb-arr{transition:transform .18s}
+.why-btn:hover .wb-arr{transform:translateX(3px)}
+
 /* ===== LAYOUT ===== */
 main{position:relative;flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;padding:16px 24px;min-height:0;
   transition:grid-template-columns .7s cubic-bezier(.6,.05,.2,1)}
@@ -68,6 +76,11 @@ main.camera-only .panel.twin{opacity:0;pointer-events:none}
 #overlay{pointer-events:none}
 .olabel{position:absolute;left:12px;top:12px;font-size:11px;color:var(--mut);
   background:rgba(4,7,13,.65);border:1px solid var(--line);border-radius:var(--r-sm);padding:4px 9px;z-index:2;backdrop-filter:blur(4px)}
+
+/* FPS da câmera — sobreposto no canto do feed (é o fps da captura) */
+.pill.fps-cam{position:absolute;right:12px;top:12px;z-index:3;color:var(--cyan-hot);
+  background:rgba(4,7,13,.72);border:1px solid rgba(34,211,238,.4);backdrop-filter:blur(4px);
+  box-shadow:0 0 14px rgba(34,211,238,.14)}
 
 /* ===== HUD ===== */
 .hud{position:absolute;right:12px;top:12px;width:224px;background:rgba(6,11,20,.74);
@@ -203,12 +216,89 @@ button.big{padding:13px 28px;font-size:15px;letter-spacing:.3px}
 .lp-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:8px}
 .lp-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--violet));transition:width .1s linear}
 
-/* ===== feixe de dados câmera -> gêmeo ===== */
+/* ===== feixe de dados câmera -> sombra ===== */
 #linkbeam{position:absolute;top:50%;left:50%;width:0;height:2px;transform:translate(-50%,-50%);z-index:4;
   background:linear-gradient(90deg,transparent,var(--cyan),#9bf6ff,var(--cyan),transparent);opacity:0;pointer-events:none;
   box-shadow:0 0 14px rgba(34,211,238,.9)}
 #linkbeam.fire{animation:beam 1.1s ease-out}
 @keyframes beam{0%{width:0;opacity:0}25%{opacity:1}100%{width:46%;opacity:0}}
+
+/* =====================================================================
+   DIÁLOGO DE EXPLICAÇÃO — "Por que isto é uma Sombra Digital?"
+   Leitura tipo artigo: calmo, pouco "tech", fácil de ler.
+   ===================================================================== */
+.why-dialog{width:min(680px,94vw);max-height:88vh;padding:0;border:1px solid var(--line);border-radius:16px;
+  color:var(--txt);background:#0f1520;box-shadow:var(--shadow);overflow:hidden}
+.why-dialog::backdrop{background:rgba(2,5,11,.62);backdrop-filter:blur(4px)}
+.why-dialog[open]{animation:wdIn .24s ease-out}
+.why-dialog[open]::backdrop{animation:wdFade .24s ease}
+@keyframes wdIn{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+@keyframes wdFade{from{opacity:0}to{opacity:1}}
+
+/* cabeçalho fixo (rótulo discreto + fechar) */
+.wd-head{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:14px;padding:13px 20px;
+  border-bottom:1px solid var(--line);background:rgba(15,21,32,.96);backdrop-filter:blur(8px)}
+.wd-eyebrow{font-size:12px;letter-spacing:.4px;text-transform:uppercase;color:var(--faint)}
+.wd-close{margin-left:auto;display:grid;place-items:center;width:36px;height:36px;flex:none;padding:0;border-radius:9px;
+  font-size:14px;color:var(--mut);background:transparent;border:1px solid var(--line)}
+.wd-close:hover{color:var(--txt);border-color:var(--line2);background:rgba(255,255,255,.04)}
+
+/* corpo: documento legível */
+.wd-body.doc{overflow-y:auto;max-height:calc(88vh - 64px);overscroll-behavior:contain;
+  padding:22px 40px 36px;font-family:var(--font-ui);font-size:15.5px;line-height:1.72;color:#cdd6e4;
+  scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+@media (max-width:560px){.wd-body.doc{padding:18px 20px 28px;font-size:15px}}
+/* barra de rolagem discreta, no tom do modal */
+.wd-body.doc::-webkit-scrollbar{width:10px}
+.wd-body.doc::-webkit-scrollbar-track{background:transparent}
+.wd-body.doc::-webkit-scrollbar-thumb{background:var(--line2);border-radius:999px;
+  border:3px solid #0f1520;background-clip:padding-box}
+.wd-body.doc::-webkit-scrollbar-thumb:hover{background:#3c5168;background-clip:padding-box}
+
+.doc-tag{margin:0 0 10px;font-size:12.5px;font-weight:600;letter-spacing:.3px;color:var(--cyan)}
+.doc h1{margin:0 0 14px;font-family:var(--font-ui);font-weight:700;letter-spacing:.2px;line-height:1.28;
+  font-size:clamp(22px,3.6vw,28px);color:#f0f4fb}
+.doc-intro{margin:0 0 8px;font-size:16px;color:#c2ccdb}
+
+.doc h2{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin:30px 0 10px;padding-bottom:8px;
+  font-family:var(--font-ui);font-weight:700;font-size:18px;letter-spacing:.2px;color:#eef3fb;border-bottom:1px solid var(--line)}
+.doc-n{color:var(--cyan);font-weight:700}
+.doc-cite{font-size:13px;font-weight:400;font-style:italic;color:var(--faint)}
+
+.doc p{margin:0 0 14px}
+.doc b{color:#eef3fb;font-weight:600}
+
+/* listas de tópicos */
+.doc-list{list-style:none;margin:0 0 14px;padding:0}
+.doc-list li{position:relative;margin:0 0 10px;padding-left:20px;color:#cdd6e4}
+.doc-list li::before{content:"";position:absolute;left:3px;top:.62em;width:6px;height:6px;border-radius:50%;
+  background:var(--cyan);opacity:.85}
+.doc-list li.here{padding:11px 14px 11px 16px;margin-left:-2px;border-left:2px solid var(--cyan);border-radius:0 8px 8px 0;
+  background:rgba(34,211,238,.06)}
+.doc-list li.here::before{display:none}
+.doc-mark{color:var(--cyan);font-weight:600;font-size:.92em;white-space:nowrap}
+
+/* destaque-resumo em uma frase */
+.doc-note{margin:6px 0 16px;padding:13px 16px;border:1px solid var(--line);border-left:3px solid var(--cyan);
+  border-radius:0 9px 9px 0;background:rgba(255,255,255,.03);font-size:15px;color:#dbe3ef}
+
+/* mini comparação uma via x duas vias (texto, sem blocos "tech") */
+.doc-flow{display:grid;gap:8px;margin:0 0 4px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;
+  background:rgba(255,255,255,.02);font-size:14.5px;color:#c8d2e0}
+.doc-flow span{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.doc-flow b{font-size:18px;line-height:1;color:var(--cyan);font-weight:700}
+.doc-flow em{font-style:normal;color:var(--faint);font-size:13px}
+
+/* rodapé com voltar (discreto) */
+.doc-foot{margin-top:30px}
+.doc-back{font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;
+  border:1px solid var(--line);border-radius:9px;padding:9px 16px;background:transparent;
+  transition:color .18s,border-color .18s,background .18s}
+.doc-back:hover{color:var(--txt);border-color:var(--cyan);background:rgba(34,211,238,.06)}
+
+@media (prefers-reduced-motion:reduce){
+  .why-btn .wb-arr{transition:none}
+}
 
 /* ===== acessibilidade: reduzir movimento ===== */
 @media (prefers-reduced-motion:reduce){
